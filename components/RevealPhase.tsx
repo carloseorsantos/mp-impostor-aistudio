@@ -18,7 +18,6 @@ const RevealPhase: React.FC<Props> = ({ config, onFinish, t, isOnline, myId }) =
   const [decoyTips, setDecoyTips] = useState<string[]>([]);
   const [isLoadingTips, setIsLoadingTips] = useState(false);
 
-  // In online mode, we only show the card matching our peer ID
   const currentPlayer = isOnline 
     ? config.players.find(p => p.id === myId || (p.isHost && myId === 'host')) || config.players[0]
     : config.players[localIndex];
@@ -71,36 +70,42 @@ const RevealPhase: React.FC<Props> = ({ config, onFinish, t, isOnline, myId }) =
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
-      <div className="text-center space-y-2">
-        <h3 className="text-indigo-400 font-bold uppercase tracking-widest text-xs">
-          {isOnline ? 'Online Mode' : t.playerOf.replace('{n}', (localIndex + 1).toString()).replace('{total}', config.players.length.toString())}
+    <div className="flex-1 flex flex-col items-center justify-center p-4 bg-[#0a1120] border border-cyan-900/30 rounded-2xl animate-in fade-in duration-500">
+      <div className="text-center mb-8">
+        <h3 className="text-cyan-500 font-black uppercase tracking-[0.3em] text-[10px] mb-2">
+          {isOnline ? 'Personal Data Reveal' : `Decrypting Identity: ${localIndex + 1}/${config.players.length}`}
         </h3>
-        <h2 className="text-4xl font-black">{currentPlayer.name}</h2>
+        <h2 className="text-4xl font-black text-white italic tracking-tighter">{currentPlayer.name}</h2>
       </div>
 
       {!isRevealing ? (
-        <button onClick={handleReveal} className="w-full aspect-square max-h-[320px] bg-slate-800 rounded-[3rem] border-4 border-dashed border-slate-700 flex flex-col items-center justify-center gap-4 active:border-indigo-500 transition-colors">
-          <span className="text-8xl">👁️</span>
-          <span className="text-xl font-bold text-slate-400 uppercase tracking-widest">{t.tapToReveal}</span>
+        <button 
+          onClick={handleReveal} 
+          className="w-full aspect-square max-w-[280px] bg-[#050b18] rounded-[2.5rem] border-2 border-dashed border-cyan-800/30 flex flex-col items-center justify-center gap-4 active:border-cyan-500 hover:bg-cyan-950/10 transition-all group"
+        >
+          <div className="text-8xl group-hover:scale-110 transition-transform">👁️</div>
+          <div className="text-xs font-black text-cyan-600 uppercase tracking-widest">{t.tapToReveal}</div>
         </button>
       ) : (
-        <div className="w-full space-y-8 animate-in flip-in-y duration-500">
-          <div className={`p-10 rounded-[2.5rem] text-center border-4 ${
-            currentPlayer.isImpostor ? 'bg-red-600/20 border-red-500' : 'bg-indigo-600/20 border-indigo-500'
+        <div className="w-full max-w-[400px] space-y-6 animate-in zoom-in duration-500">
+          <div className={`p-8 rounded-[2rem] text-center border-2 ${
+            currentPlayer.isImpostor ? 'bg-red-950/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'bg-cyan-950/20 border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.2)]'
           }`}>
             {currentPlayer.isImpostor ? (
               <>
                 <div className="text-7xl mb-4">😈</div>
-                <h4 className="text-red-400 font-bold uppercase tracking-widest text-xs">{t.youAreImpostor}</h4>
-                <div className="text-6xl font-black text-white mb-4">{t.impostor}</div>
-                <p className="text-red-300 font-medium">{t.blendIn.replace('{cat}', config.category)}</p>
+                <h4 className="text-red-400 font-black uppercase tracking-[0.2em] text-[10px] mb-1">{t.youAreImpostor}</h4>
+                <div className="text-5xl font-black text-white mb-4 italic tracking-tighter">{t.impostor}</div>
+                <p className="text-red-300/80 text-xs font-bold leading-relaxed">{t.blendIn.replace('{cat}', config.category)}</p>
                 {decoyTips.length > 0 ? (
-                  <div className="mt-6 flex flex-wrap justify-center gap-2">
-                    {decoyTips.map((tip, i) => <span key={i} className="bg-red-500/30 px-3 py-1 rounded-full text-xs font-bold border border-red-500/50">{tip}</span>)}
+                  <div className="mt-6 p-4 bg-red-900/10 border border-red-800/30 rounded-xl space-y-2">
+                    <p className="text-[8px] font-black text-red-500 uppercase tracking-widest">Interference Decoys</p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {decoyTips.map((tip, i) => <span key={i} className="bg-red-900/30 px-3 py-1 rounded text-[10px] font-bold border border-red-800/50 text-white">{tip}</span>)}
+                    </div>
                   </div>
                 ) : (
-                  <button onClick={fetchDecoyTips} disabled={isLoadingTips} className="mt-8 text-xs font-black bg-red-600 px-6 py-3 rounded-xl active:scale-95 disabled:opacity-50">
+                  <button onClick={fetchDecoyTips} disabled={isLoadingTips} className="mt-8 text-[10px] font-black bg-red-600 text-white px-6 py-3 rounded-lg active:scale-95 disabled:opacity-50 uppercase tracking-widest">
                     {isLoadingTips ? t.thinkingDecoys : t.getDecoyWords}
                   </button>
                 )}
@@ -108,14 +113,17 @@ const RevealPhase: React.FC<Props> = ({ config, onFinish, t, isOnline, myId }) =
             ) : (
               <>
                 <div className="text-7xl mb-4">💎</div>
-                <h4 className="text-indigo-400 font-bold uppercase tracking-widest text-xs">{t.secretWordLabel}</h4>
-                <div className="text-6xl font-black text-white mb-4 tracking-tight">{config.secretWord}</div>
-                <p className="text-indigo-300 font-medium">{t.categoryLabel.replace('{cat}', config.category)}</p>
+                <h4 className="text-cyan-400 font-black uppercase tracking-[0.2em] text-[10px] mb-1">{t.secretWordLabel}</h4>
+                <div className="text-5xl font-black text-white mb-4 italic tracking-tighter">{config.secretWord}</div>
+                <p className="text-cyan-300/80 text-xs font-bold">{t.categoryLabel.replace('{cat}', config.category)}</p>
               </>
             )}
           </div>
-          <button onClick={handleNext} className="w-full bg-slate-100 text-slate-900 py-6 rounded-[2rem] text-2xl font-black active:scale-95 shadow-xl">
-            {isOnline ? 'FINISH REVEAL' : (localIndex === config.players.length - 1 ? t.confirmReveal : t.hideContinue)}
+          <button 
+            onClick={handleNext} 
+            className="w-full bg-slate-100 text-[#050b18] py-5 rounded-xl text-xl font-black active:scale-95 transition-all shadow-xl uppercase tracking-tighter italic"
+          >
+            {isOnline ? 'SECURE DATA' : (localIndex === config.players.length - 1 ? t.confirmReveal : t.hideContinue)}
           </button>
         </div>
       )}

@@ -28,40 +28,41 @@ const DiscussionPhase: React.FC<Props> = ({ onReveal, t, isHost }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
-      <div className="text-center space-y-4">
-        <h2 className="text-5xl font-black tracking-tight">{t.timeToDiscuss}</h2>
-        <p className="text-slate-400 text-lg px-8">{t.discussDesc}</p>
-      </div>
+    <div className="p-6 bg-[#0a1120] border border-cyan-900/30 rounded-2xl animate-in slide-in-from-top duration-500">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="text-center md:text-left space-y-2">
+          <h2 className="text-3xl font-black italic tracking-tighter text-white">{t.timeToDiscuss}</h2>
+          <p className="text-slate-400 text-xs font-bold leading-relaxed max-w-[300px]">{t.discussDesc}</p>
+        </div>
 
-      <div className="w-full bg-slate-800 rounded-[3rem] p-10 flex flex-col items-center shadow-inner border border-slate-700">
-        <div className={`text-8xl font-mono font-bold mb-8 ${seconds < 30 ? 'text-red-500 animate-pulse' : 'text-indigo-400'}`}>
-          {formatTime(seconds)}
+        <div className="flex flex-col items-center bg-[#050b18] px-8 py-4 rounded-2xl border border-cyan-800/20 shadow-inner">
+          <div className={`text-6xl font-mono font-black ${seconds < 30 ? 'text-red-500 animate-pulse' : 'text-cyan-500'}`}>
+            {formatTime(seconds)}
+          </div>
+          <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.4em] mt-1">Countdown Active</span>
         </div>
         
-        {isHost && (
-          <div className="flex gap-4 w-full">
-            <button
-              onClick={() => setIsActive(!isActive)}
-              className={`flex-1 ${isActive ? 'bg-amber-600' : 'bg-emerald-600'} py-4 rounded-2xl font-black text-xl active:scale-95`}
-            >
-              {isActive ? t.pause : t.startTimer}
-            </button>
-            <button onClick={() => { setIsActive(false); setSeconds(180); }} className="p-4 bg-slate-700 rounded-2xl active:scale-95">
-              {t.reset}
+        {isHost ? (
+          <div className="flex flex-col gap-2 w-full md:w-auto">
+            <div className="flex gap-2">
+               <button
+                onClick={() => setIsActive(!isActive)}
+                className={`px-6 py-3 rounded-lg font-black text-xs uppercase tracking-widest active:scale-95 transition-all ${isActive ? 'bg-amber-600/20 text-amber-500 border border-amber-500/50' : 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/50'}`}
+              >
+                {isActive ? t.pause : t.startTimer}
+              </button>
+              <button onClick={() => { setIsActive(false); setSeconds(180); }} className="px-4 py-3 bg-slate-800 rounded-lg text-xs font-black text-slate-400 active:scale-95">
+                {t.reset}
+              </button>
+            </div>
+            <button onClick={onReveal} className="w-full bg-cyan-600 text-white py-4 rounded-lg text-sm font-black uppercase tracking-widest shadow-lg shadow-cyan-600/20 active:scale-[0.98]">
+              {t.whoWasIt}
             </button>
           </div>
-        )}
-      </div>
-
-      <div className="w-full space-y-4">
-        {isHost ? (
-          <button onClick={onReveal} className="w-full bg-indigo-600 py-6 rounded-[2rem] text-2xl font-black shadow-xl active:scale-95">
-            {t.whoWasIt}
-          </button>
         ) : (
-          <div className="text-center py-6 animate-pulse-soft">
-            <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Waiting for host to reveal results...</p>
+          <div className="text-center py-4 bg-slate-900/30 rounded-xl px-6 border border-slate-800">
+            <p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[8px] mb-1">Status</p>
+            <p className="text-cyan-600 font-black text-[10px] animate-pulse">Monitoring signals from Host Control...</p>
           </div>
         )}
       </div>
